@@ -1,0 +1,53 @@
+<head>
+	<script src="https://identifyme.net/authRequest/lib.js" type="text/javascript"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<button id="login" onClick="login();">Login via Phone</button>
+</body>
+<script>
+	/* The IdentifyMe client library exposes 2 methods: identifymeInit and checkReportOnLoad */
+
+	// This is called on the login button's onClick event
+	function login(){
+		identifymeInit({
+			clientId: XX,  // this is the clientId available in your dashboard
+			callback: myLoginReportHandler,
+			//countryCode: YY,  // (optional) preset country code for the verification screen e.g. 91
+			//phone: XXXXXXXXXX,  // (optional) preset phone for the verification screen
+		});
+	}
+
+	// This is called when the verification screen sends back the encrypted report
+	function myLoginReportHandler(encryptedReport){
+		// Send the report to your backend and handle the response
+		var url = "http://localhost/identifyme/php/redeemReport.php"; // Replace this with your own endpoint
+		$.ajax({
+			url: url,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				encryptedReport: encryptedReport
+			}
+		})
+		.done(function(data) {
+			if(data.status == "success"){
+				alert("login successful: +" + data.countryCode + data.phone);
+			}
+			console.log(data);
+		})
+		.fail(function(xhr, status, err) {
+			alert("Verification failed: " + status);
+			console.error(err);
+			// Retry
+			login();
+		})
+	}
+
+	// This is required to handle verification via short URL in SMS
+	(function() {
+		checkReportOnLoad({
+			callback: myLoginReportHandler
+		});
+	})();
+</script>

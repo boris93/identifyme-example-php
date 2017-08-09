@@ -1,2 +1,3 @@
 # identifyme-example-php
-Sample PHP implementation of IdentifyMe phone verification with a PHP backend
+
+Sample implementation of [Phone verification by IdentifyMe](https://identifyme.net) with a PHP backend
